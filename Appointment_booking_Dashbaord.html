@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>ZenithCore | Premium Appointment Dashboard</title>
+  <!-- Google Fonts + Font Awesome + Chart.js -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+
+    :root {
+      --bg-gradient: linear-gradient(135deg, #f5f7fc 0%, #eef2f8 100%);
+      --card-bg: rgba(255, 255, 255, 0.96);
+      --glass-bg: rgba(255, 255, 255, 0.7);
+      --text-primary: #0a0f2c;
+      --text-secondary: #5a6a85;
+      --border-light: rgba(203, 213, 225, 0.5);
+      --blue-primary: #4361ee;
+      --blue-hover: #3a56d4;
+      --blue-glow: rgba(67, 97, 238, 0.2);
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --purple-accent: #8b5cf6;
+      --sidebar-width: 280px;
+      --shadow-sm: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+      --shadow-md: 0 20px 25px -12px rgba(0, 0, 0, 0.08);
+    }
+
+    body.dark {
+      --bg-gradient: linear-gradient(135deg, #0f1123 0%, #1a1d35 100%);
+      --card-bg: rgba(30, 33, 57, 0.95);
+      --glass-bg: rgba(30, 33, 57, 0.7);
+      --text-primary: #f0f3fa;
+      --text-secondary: #9aa4bf;
+      --border-light: rgba(55, 65, 95, 0.6);
+      --blue-primary: #5f7cff;
+      --blue-glow: rgba(95, 124, 255, 0.25);
+    }
+
+    body {
+      background: var(--bg-gradient);
+      color: var(--text-primary);
+      transition: all 0.3s ease;
+      min-height: 100vh;
+    }
+
+    /* Animated background */
+    .app-wrapper {
+      display: flex;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* Premium Sidebar */
+    .sidebar {
+      width: var(--sidebar-width);
+      background: var(--card-bg);
+      backdrop-filter: blur(10px);
+      border-right: 1px solid var(--border-light);
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 20;
+      transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      flex-direction: column;
+      padding: 28px 0;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .logo-area {
+      padding: 0 24px 40px 28px;
+      font-weight: 800;
+      font-size: 1.7rem;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: linear-gradient(135deg, var(--blue-primary), var(--purple-accent));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      letter-spacing: -0.5px;
+    }
+    .logo-area i {
+      background: linear-gradient(135deg, var(--blue-primary), var(--purple-accent));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      font-size: 1.8rem;
+    }
+
+    .nav-links {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 0 20px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 18px;
+      border-radius: 16px;
+      font-weight: 500;
+      transition: all 0.25s ease;
+      color: var(--text-secondary);
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+    .nav-item i { width: 24px; font-size: 1.2rem; }
+    .nav-item.active {
+      background: linear-gradient(135deg, var(--blue-primary)20, var(--purple-accent)20);
+      color: var(--blue-primary);
+      font-weight: 600;
+      box-shadow: 0 2px 8px var(--blue-glow);
+    }
+    .nav-item:hover:not(.active) {
+      background: rgba(67, 97, 238, 0.08);
+      color: var(--text-primary);
+      transform: translateX(5px);
+    }
+
+    /* Main content */
+    .main-content {
+      flex: 1;
+      margin-left: var(--sidebar-width);
+      transition: margin 0.4s ease;
+    }
+
+    /* Premium Navbar */
+    .top-nav {
+      background: var(--glass-bg);
+      backdrop-filter: blur(12px);
+      padding: 0 32px;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-light);
+      position: sticky;
+      top: 0;
+      z-index: 15;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .menu-toggle {
+      display: none;
+      font-size: 1.6rem;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .menu-toggle:hover { transform: scale(1.05); }
+
+    .search-box {
+      background: var(--card-bg);
+      padding: 10px 20px;
+      border-radius: 60px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border: 1px solid var(--border-light);
+      transition: all 0.2s;
+    }
+    .search-box:focus-within { box-shadow: 0 0 0 3px var(--blue-glow); border-color: var(--blue-primary); }
+    .search-box input {
+      background: transparent;
+      border: none;
+      outline: none;
+      width: 260px;
+      font-weight: 500;
+    }
+
+    .nav-actions {
+      display: flex;
+      gap: 24px;
+      align-items: center;
+    }
+    .book-btn {
+      background: linear-gradient(135deg, var(--blue-primary), var(--purple-accent));
+      color: white;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 40px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 4px 12px var(--blue-glow);
+    }
+    .book-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px var(--blue-glow); }
+    .theme-toggle, .nav-actions i {
+      cursor: pointer;
+      font-size: 1.3rem;
+      transition: transform 0.2s;
+    }
+    .theme-toggle:hover, .nav-actions i:hover { transform: scale(1.1); }
+
+    /* Dashboard Grid */
+    .dashboard-container {
+      padding: 32px;
+    }
+
+    /* Animated KPI Cards */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 24px;
+      margin-bottom: 40px;
+    }
+    .kpi-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(8px);
+      border-radius: 28px;
+      padding: 24px;
+      transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+      border: 1px solid var(--border-light);
+      box-shadow: var(--shadow-sm);
+      position: relative;
+      overflow: hidden;
+    }
+    .kpi-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+      transition: left 0.5s;
+    }
+    .kpi-card:hover::before { left: 100%; }
+    .kpi-card:hover { transform: translateY(-6px) scale(1.01); box-shadow: var(--shadow-md); }
+
+    /* Modern Section titles */
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin: 32px 0 24px 0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      letter-spacing: -0.3px;
+    }
+
+    .upcoming-list, .clients-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px;
+    }
+    .appointment-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(8px);
+      border-radius: 24px;
+      padding: 20px;
+      flex: 1 1 280px;
+      border: 1px solid var(--border-light);
+      transition: all 0.25s;
+      box-shadow: var(--shadow-sm);
+    }
+    .appointment-card:hover { transform: translateY(-4px); border-color: var(--blue-primary); }
+
+    .status-badge {
+      border-radius: 60px;
+      padding: 6px 14px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      display: inline-block;
+      backdrop-filter: blur(4px);
+    }
+    .status.confirmed { background: #10b98120; color: #10b981; border: 1px solid #10b98140; }
+    .status.pending { background: #f59e0b20; color: #f59e0b; border: 1px solid #f59e0b40; }
+    .status.cancelled { background: #ef444420; color: #ef4444; border: 1px solid #ef444440; }
+
+    /* Premium Table */
+    .app-table {
+      width: 100%;
+      background: var(--card-bg);
+      border-radius: 28px;
+      border-collapse: separate;
+      border-spacing: 0;
+      overflow: hidden;
+      backdrop-filter: blur(4px);
+    }
+    .app-table th {
+      padding: 18px 20px;
+      background: rgba(67, 97, 238, 0.05);
+      font-weight: 600;
+    }
+    .app-table td {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-light);
+    }
+    .app-table tr:hover td { background: rgba(67, 97, 238, 0.03); }
+
+    /* Modal Glassmorphic */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(8px);
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+    .modal-content {
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      max-width: 520px;
+      width: 90%;
+      border-radius: 36px;
+      padding: 32px;
+      border: 1px solid var(--border-light);
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+      transform: scale(0.95);
+      animation: modalPop 0.2s ease forwards;
+    }
+    @keyframes modalPop { to { transform: scale(1); } }
+
+    input, select, textarea {
+      background: var(--glass-bg);
+      border: 1px solid var(--border-light);
+      padding: 12px 16px;
+      border-radius: 20px;
+      width: 100%;
+      transition: all 0.2s;
+      color: var(--text-primary);
+    }
+    input:focus, select:focus { outline: none; border-color: var(--blue-primary); box-shadow: 0 0 0 3px var(--blue-glow); }
+
+    /* Animations */
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .dashboard-container > * { animation: fadeSlideUp 0.5s ease backwards; }
+    .kpi-card:nth-child(1) { animation-delay: 0.05s; }
+    .kpi-card:nth-child(2) { animation-delay: 0.1s; }
+    .kpi-card:nth-child(3) { animation-delay: 0.15s; }
+    .kpi-card:nth-child(4) { animation-delay: 0.2s; }
+
+    /* Responsive */
+    @media (max-width: 992px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .main-content { margin-left: 0; }
+      .menu-toggle { display: block; }
+    }
+    button { cursor: pointer; }
+    .badge-icon { font-size: 2rem; margin-bottom: 8px; }
+  </style>
+</head>
+<body>
+<div class="app-wrapper">
+  <aside class="sidebar" id="sidebar">
+    <div class="logo-area"><i class="fas fa-sparkle"></i> ZenithCore</div>
+    <div class="nav-links">
+      <div class="nav-item active" data-section="dashboard"><i class="fas fa-chart-pie"></i> Dashboard</div>
+      <div class="nav-item" data-section="appointments"><i class="fas fa-calendar-check"></i> Appointments</div>
+      <div class="nav-item" data-section="calendar"><i class="fas fa-calendar-week"></i> Calendar</div>
+      <div class="nav-item" data-section="clients"><i class="fas fa-users"></i> Clients</div>
+      <div class="nav-item" data-section="messages"><i class="fas fa-comment-dots"></i> Messages</div>
+      <div class="nav-item" data-section="analytics"><i class="fas fa-chart-line"></i> Analytics</div>
+      <div class="nav-item" data-section="settings"><i class="fas fa-sliders-h"></i> Settings</div>
+    </div>
+    <div style="padding: 24px 28px; font-size:12px; opacity:0.6;"><i class="fas fa-crown"></i> Enterprise v3.0</div>
+  </aside>
+
+  <main class="main-content">
+    <div class="top-nav">
+      <div class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></div>
+      <div class="search-box"><i class="fas fa-search"></i><input type="text" placeholder="Search appointments, clients..." id="globalSearch"></div>
+      <div class="nav-actions">
+        <div class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i></div>
+        <i class="fas fa-bell" style="position:relative;"><span style="position:absolute; top:-5px; right:-8px; background:#ef4444; border-radius:50%; width:10px; height:10px;"></span></i>
+        <div class="user-avatar"><i class="fas fa-user-astronaut fa-2x" style="color:var(--blue-primary);"></i></div>
+        <button class="book-btn" id="openModalBtn"><i class="fas fa-plus-circle"></i> Book Appointment</button>
+      </div>
+    </div>
+
+    <div class="dashboard-container" id="mainDashboard"></div>
+  </main>
+</div>
+
+<!-- Premium Modal -->
+<div id="appointmentModal" class="modal">
+  <div class="modal-content">
+    <h2 style="margin-bottom:20px;">✨ Schedule New</h2>
+    <form id="appointmentForm">
+      <input type="text" placeholder="Full name" id="clientName" required><br><br>
+      <input type="email" placeholder="Email address" id="clientEmail"><br><br>
+      <input type="tel" placeholder="Phone number" id="clientPhone"><br><br>
+      <select id="serviceSelect"><option>✨ Consultation</option><option>💇 Hair Styling</option><option>🏋️ Gym Session</option><option>🩺 Medical Check</option></select><br><br>
+      <div style="display:flex; gap:12px;"><input type="date" id="appDate" style="flex:1" required> <input type="time" id="appTime" style="flex:1" required></div><br>
+      <textarea placeholder="Additional notes" id="notes" rows="2"></textarea><br><br>
+      <button type="submit" style="background:linear-gradient(135deg, #4361ee, #8b5cf6); color:white; border:none; padding:12px; border-radius:40px; width:100%; font-weight:bold;">Confirm Booking</button>
+      <button type="button" id="closeModal" style="margin-top:12px; width:100%; background:transparent;">Cancel</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  // ---------- MOCK DATA ----------
+  let appointments = [
+    { id: 1, name: "Emily Clarke", email: "emily@c.com", phone: "+1 555 1234", service: "Consultation", date: "2026-05-18", time: "10:00", status: "Confirmed", notes: "", avatar: "EC" },
+    { id: 2, name: "James Wilson", email: "james@c.com", phone: "+1 555 5678", service: "Hair Styling", date: "2026-05-19", time: "14:30", status: "Pending", notes: "", avatar: "JW" },
+    { id: 3, name: "Sophia Martinez", email: "sophia@c.com", phone: "+1 555 9999", service: "Gym Session", date: "2026-05-20", time: "09:00", status: "Confirmed", notes: "", avatar: "SM" },
+    { id: 4, name: "Michael Brown", email: "michael@c.com", phone: "+1 555 7777", service: "Medical Check", date: "2026-05-21", time: "11:15", status: "Cancelled", notes: "", avatar: "MB" },
+    { id: 5, name: "Olivia Johnson", email: "olivia@c.com", phone: "+1 555 2222", service: "Consultation", date: "2026-05-22", time: "15:45", status: "Pending", notes: "", avatar: "OJ" }
+  ];
+  let nextId = 6;
+  let activeSection = "dashboard";
+  let calendarInstance = null;
+
+  const dashboardContainer = document.getElementById("mainDashboard");
+  const modal = document.getElementById("appointmentModal");
+  const openModalBtn = document.getElementById("openModalBtn");
+  const closeModalBtn = document.getElementById("closeModal");
+  const appointmentFormElem = document.getElementById("appointmentForm");
+  const themeToggle = document.getElementById("themeToggle");
+  const menuToggle = document.getElementById("menuToggle");
+  const sidebar = document.getElementById("sidebar");
+
+  function showSection(sectionId) {
+    activeSection = sectionId;
+    renderCurrentView();
+    document.querySelectorAll('.nav-item').forEach(item => {
+      if(item.getAttribute('data-section') === sectionId) item.classList.add('active');
+      else item.classList.remove('active');
+    });
+  }
+
+  function renderCurrentView() {
+    if(activeSection === "dashboard") renderDashboard();
+    else if(activeSection === "appointments") renderAppointmentsTable();
+    else if(activeSection === "calendar") renderCalendarView();
+    else if(activeSection === "clients") renderClientsSection();
+    else if(activeSection === "analytics") renderAnalytics();
+    else if(activeSection === "messages") renderMessages();
+    else if(activeSection === "settings") renderSettings();
+  }
+
+  function getStats() {
+    const total = appointments.length;
+    const pending = appointments.filter(a=>a.status==="Pending").length;
+    const completed = appointments.filter(a=>a.status==="Confirmed").length;
+    const revenue = completed * 95;
+    return { total, pending, completed, revenue };
+  }
+
+  function renderDashboard() {
+    const { total, pending, completed, revenue } = getStats();
+    const upcoming = [...appointments].filter(a=>a.status!=="Cancelled").sort((a,b)=>new Date(a.date)-new Date(b.date)).slice(0,4);
+    let html = `
+      <div class="kpi-grid">
+        <div class="kpi-card"><i class="fas fa-calendar-alt fa-2x" style="color:#4361ee"></i><h2 style="font-size:2rem; margin:12px 0 4px;">${total}</h2><p>Total Appointments</p><small>📈 +14% this month</small></div>
+        <div class="kpi-card"><i class="fas fa-hourglass-half fa-2x" style="color:#f59e0b"></i><h2 style="font-size:2rem;">${pending}</h2><p>Pending Bookings</p><small>⏳ Awaiting confirmation</small></div>
+        <div class="kpi-card"><i class="fas fa-check-circle fa-2x" style="color:#10b981"></i><h2 style="font-size:2rem;">${completed}</h2><p>Completed Sessions</p><small>✅ +5 vs last week</small></div>
+        <div class="kpi-card"><i class="fas fa-chart-line fa-2x" style="color:#8b5cf6"></i><h2 style="font-size:2rem;">$${revenue}</h2><p>Revenue Generated</p><small>📊 +22% growth</small></div>
+      </div>
+      <div class="section-title"><i class="fas fa-calendar-star"></i> Smart Calendar Preview</div>
+      <div id="miniCalendar" style="background:var(--card-bg); border-radius:32px; padding:20px; margin-bottom:32px; border:1px solid var(--border-light);"></div>
+      <div class="section-title"><i class="fas fa-clock"></i> Upcoming Priority</div>
+      <div class="upcoming-list">
+        ${upcoming.map(app => `<div class="appointment-card"><i class="fas fa-user-circle fa-2x" style="color:var(--blue-primary)"></i><div style="margin-top:12px;"><strong>${app.name}</strong><br>${app.service}<br><span style="font-size:13px;">📅 ${app.date} at ${app.time}</span><div><span class="status-badge status ${app.status.toLowerCase()}">${app.status}</span></div></div></div>`).join('')}
+      </div>
+      <div class="section-title"><i class="fas fa-table-list"></i> Latest Bookings</div>
+      <table class="app-table"><thead><tr><th>Client</th><th>Service</th><th>Date</th><th>Status</th><th style="width:80px"></th></tr></thead><tbody>
+        ${appointments.slice(0,5).map(app => `<tr><td><i class="fas fa-user-check"></i> ${app.name}</td><td>${app.service}</td><td>${app.date} ${app.time}</td><td><span class="status-badge status ${app.status.toLowerCase()}">${app.status}</span></td><td><button class="deleteAppBtn" data-id="${app.id}" style="background:none; border:none; color:var(--danger)"><i class="fas fa-trash-alt"></i></button></td></tr>`).join('')}
+      </tbody></table>
+    `;
+    dashboardContainer.innerHTML = html;
+    renderMiniCalendar();
+    attachDeleteEvents();
+  }
+
+  function renderMiniCalendar() {
+    const container = document.getElementById("miniCalendar");
+    if(!container) return;
+    const eventsHtml = appointments.map(a => `<span style="display:inline-block; background:var(--blue-glow); border-radius:40px; padding:6px 14px; margin:4px; font-size:12px;">${a.date} ${a.time} - ${a.name}</span>`).slice(0,8);
+    container.innerHTML = `<div style="font-weight:700; margin-bottom:16px;"><i class="fas fa-calendar-day"></i> Upcoming slots</div><div>${eventsHtml.join('')}</div>`;
+  }
+
+  function attachDeleteEvents() {
+    document.querySelectorAll('.deleteAppBtn').forEach(btn => {
+      btn.addEventListener('click', (e) => { let id = parseInt(btn.dataset.id); appointments = appointments.filter(a=>a.id !== id); renderCurrentView(); });
+    });
+  }
+
+  function renderAppointmentsTable() {
+    const searchTerm = document.getElementById('globalSearch')?.value?.toLowerCase() || '';
+    let filtered = appointments.filter(a=>a.name.toLowerCase().includes(searchTerm) || a.service.toLowerCase().includes(searchTerm));
+    dashboardContainer.innerHTML = `
+      <div class="section-title"><i class="fas fa-edit"></i> Manage Appointments</div>
+      <div style="display:flex; gap:12px; margin-bottom:28px; flex-wrap:wrap;"><input type="text" id="filterTable" placeholder="🔍 Filter by client/service" style="width:280px;"><select id="statusFilter" style="width:160px;"><option value="">All status</option><option>Confirmed</option><option>Pending</option><option>Cancelled</option></select></div>
+      <table class="app-table" id="fullTable"><thead><tr><th>Client</th><th>Service</th><th>Date</th><th>Time</th><th>Status</th><th>Actions</th></tr></thead><tbody>
+        ${filtered.map(app => `<tr><td><i class="fas fa-user"></i> ${app.name}</td><td>${app.service}</td><td>${app.date}</td><td>${app.time}</td><td><span class="status-badge status ${app.status.toLowerCase()}">${app.status}</span></td><td><button class="editAppBtn" data-id="${app.id}" style="background:#4361ee20; border:none; border-radius:40px; padding:6px 12px; margin-right:6px;"><i class="fas fa-pen"></i></button> <button class="deleteAppBtn" data-id="${app.id}" style="background:#ef444420; border:none; border-radius:40px; padding:6px 12px;"><i class="fas fa-trash"></i></button></td></tr>`).join('')}
+      </tbody></table>
+    `;
+    document.getElementById('filterTable')?.addEventListener('input', (e)=>applyFilters(e.target.value, document.getElementById('statusFilter')?.value));
+    document.getElementById('statusFilter')?.addEventListener('change', (e)=>applyFilters(document.getElementById('filterTable')?.value, e.target.value));
+    attachEditDeleteEvents();
+  }
+
+  function applyFilters(search, status) {
+    let rows = document.querySelectorAll('#fullTable tbody tr');
+    rows.forEach(row => {
+      let name = row.cells[0].innerText.toLowerCase();
+      let service = row.cells[1].innerText.toLowerCase();
+      let statusCell = row.cells[4].innerText.trim();
+      let match = (name.includes(search) || service.includes(search)) && (status === "" || statusCell === status);
+      row.style.display = match ? "" : "none";
+    });
+  }
+
+  function attachEditDeleteEvents() {
+    document.querySelectorAll('.deleteAppBtn').forEach(btn => btn.addEventListener('click', (e)=>{ let id = parseInt(btn.dataset.id); appointments = appointments.filter(a=>a.id!==id); renderAppointmentsTable(); }));
+    document.querySelectorAll('.editAppBtn').forEach(btn => btn.addEventListener('click', (e)=>{ let app = appointments.find(a=>a.id == btn.dataset.id); if(app) openEditModal(app); }));
+  }
+
+  function openEditModal(app) {
+    document.getElementById('clientName').value = app.name;
+    document.getElementById('clientEmail').value = app.email;
+    document.getElementById('clientPhone').value = app.phone;
+    document.getElementById('serviceSelect').value = app.service;
+    document.getElementById('appDate').value = app.date;
+    document.getElementById('appTime').value = app.time;
+    document.getElementById('notes').value = app.notes || '';
+    modal.style.display = 'flex';
+    const originalSubmit = appointmentFormElem.onsubmit;
+    appointmentFormElem.onsubmit = (e) => {
+      e.preventDefault();
+      app.name = document.getElementById('clientName').value;
+      app.email = document.getElementById('clientEmail').value;
+      app.phone = document.getElementById('clientPhone').value;
+      app.service = document.getElementById('serviceSelect').value;
+      app.date = document.getElementById('appDate').value;
+      app.time = document.getElementById('appTime').value;
+      app.notes = document.getElementById('notes').value;
+      modal.style.display = 'none';
+      renderCurrentView();
+      appointmentFormElem.onsubmit = defaultSubmit;
+    };
+  }
+
+  function defaultSubmit(e) {
+    e.preventDefault();
+    const newApp = { id: nextId++, name: document.getElementById('clientName').value, email: document.getElementById('clientEmail').value, phone: document.getElementById('clientPhone').value, service: document.getElementById('serviceSelect').value, date: document.getElementById('appDate').value, time: document.getElementById('appTime').value, status: "Pending", notes: document.getElementById('notes').value };
+    appointments.push(newApp);
+    modal.style.display = 'none';
+    renderCurrentView();
+    appointmentFormElem.reset();
+  }
+
+  function renderCalendarView() {
+    dashboardContainer.innerHTML = `<div class="section-title"><i class="fas fa-calendar-alt"></i> Interactive Calendar</div><div id="fullCalendarContainer" style="background:var(--card-bg); border-radius:36px; padding:20px;"></div>`;
+    setTimeout(() => {
+      const calendarEl = document.getElementById('fullCalendarContainer');
+      if(calendarInstance) calendarInstance.destroy();
+      calendarInstance = new FullCalendar.Calendar(calendarEl, { initialView: 'dayGridMonth', events: appointments.map(a=>({ title: `${a.name} (${a.service})`, start: `${a.date}T${a.time}` })), headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek' }, themeSystem: 'standard' });
+      calendarInstance.render();
+    }, 50);
+  }
+
+  function renderClientsSection() {
+    dashboardContainer.innerHTML = `<div class="section-title"><i class="fas fa-id-card"></i> Premium Clients</div><div class="clients-grid">${appointments.map(c => `<div class="appointment-card" style="text-align:center"><i class="fas fa-user-circle fa-3x" style="color:var(--blue-primary)"></i><h3>${c.name}</h3><p>${c.email}<br>${c.phone}<br>📅 Last: ${c.service} on ${c.date}</p><span class="status-badge ${c.status.toLowerCase()}">${c.status}</span></div>`).join('')}</div>`;
+  }
+
+  function renderAnalytics() {
+    const serviceCount = { "Consultation":0,"Hair Styling":0,"Gym Session":0,"Medical Check":0 };
+    appointments.forEach(a => { if(serviceCount[a.service]!==undefined) serviceCount[a.service]++; });
+    dashboardContainer.innerHTML = `<div class="section-title"><i class="fas fa-chart-simple"></i> Performance Analytics</div><div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px,1fr)); gap:28px;"><div style="background:var(--card-bg); border-radius:28px; padding:24px;"><canvas id="lineChart"></canvas></div><div style="background:var(--card-bg); border-radius:28px; padding:24px;"><canvas id="barChartService"></canvas></div><div style="background:var(--card-bg); border-radius:28px; padding:24px;"><canvas id="pieChart"></canvas></div></div>`;
+    setTimeout(() => {
+      new Chart(document.getElementById('lineChart'), { type: 'line', data: { labels: ['Week 1','Week 2','Week 3','Week 4'], datasets: [{ label: 'Appointments', data: [6,9,12,15], borderColor: '#4361ee', tension: 0.3 }] } });
+      new Chart(document.getElementById('barChartService'), { type: 'bar', data: { labels: Object.keys(serviceCount), datasets: [{ label: 'Popularity', data: Object.values(serviceCount), backgroundColor: '#8b5cf6' }] } });
+      new Chart(document.getElementById('pieChart'), { type: 'pie', data: { labels: Object.keys(serviceCount), datasets: [{ data: Object.values(serviceCount), backgroundColor: ['#4361ee','#f59e0b','#10b981','#ef4444'] }] } });
+    }, 20);
+  }
+  function renderMessages() { dashboardContainer.innerHTML = `<div class="section-title">💬 Notification Center</div><div style="background:var(--card-bg); border-radius:32px; padding:40px; text-align:center;"><i class="fas fa-bell fa-3x" style="color:var(--blue-primary)"></i><p style="margin-top:16px;">🔔 New booking reminders, confirmations, and live updates will appear here.</p><div class="appointment-card" style="margin-top:20px;">✅ Upcoming: Emily Clarke - May 18, 10:00 AM</div></div>`; }
+  function renderSettings() { dashboardContainer.innerHTML = `<div class="section-title">⚙️ Dashboard Settings</div><div style="background:var(--card-bg); border-radius:32px; padding:32px;"><p><i class="fas fa-palette"></i> Theme, Notifications, Business Hours</p><button class="book-btn" style="margin-top:20px;">Save Preferences</button></div>`; }
+
+  // Event listeners & theme
+  themeToggle.addEventListener('click', () => { document.body.classList.toggle('dark'); const i = themeToggle.querySelector('i'); if(document.body.classList.contains('dark')) i.classList.replace('fa-moon','fa-sun'); else i.classList.replace('fa-sun','fa-moon'); });
+  menuToggle.addEventListener('click', () => sidebar.classList.toggle('open'));
+  document.addEventListener('click', (e) => { if(!sidebar.contains(e.target) && !menuToggle.contains(e.target) && window.innerWidth<992) sidebar.classList.remove('open'); });
+  openModalBtn.addEventListener('click', () => { appointmentFormElem.reset(); appointmentFormElem.onsubmit = defaultSubmit; modal.style.display = 'flex'; });
+  closeModalBtn.addEventListener('click', () => modal.style.display = 'none');
+  window.addEventListener('click', (e) => { if(e.target === modal) modal.style.display = 'none'; });
+  document.querySelectorAll('.nav-item').forEach(item => item.addEventListener('click', () => { showSection(item.dataset.section); if(window.innerWidth<992) sidebar.classList.remove('open'); }));
+  document.getElementById('globalSearch')?.addEventListener('input', () => { if(activeSection === 'appointments') renderAppointmentsTable(); else if(activeSection === 'dashboard') renderDashboard(); });
+
+  showSection('dashboard');
+</script>
+</body>
+</html>
