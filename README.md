@@ -380,21 +380,6 @@ Contributions are what make the open-source community amazing! Any contributions
 - Test on multiple browsers before submitting
 - Update documentation as needed
 
----
-
-## 📝 License
-
-Distributed under the **MIT License**. See `LICENSE` file for more information.
-
-You are free to:
-- ✅ Use commercially
-- ✅ Modify and adapt
-- ✅ Distribute copies
-- ✅ Use privately
-
-Under these terms:
-- 📄 Include original copyright notice
-- 📄 Include license in distributions
 
 ---
 
@@ -412,7 +397,7 @@ Under these terms:
 
 **Developer:** Sara Manzoor  
 **Email:** saramanzoor76@gmail.com   
-**Project Link:** 
+**Project repo Link:** https://github.com/Sara12-2/Appointment_booking_Dashboard
 
 ### Support Options
 - 📖 Read the documentation above
