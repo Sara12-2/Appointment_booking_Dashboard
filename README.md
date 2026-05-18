@@ -6,7 +6,6 @@
 [![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black)](#)
 
 **Apex** is a sophisticated, single-file HTML dashboard for managing appointments, clients, and business analytics. It features a modern dark-mode UI, real-time data visualization, and a fully interactive calendar, making it perfect for salons, clinics, gyms, or any service-based business.
-
 ---
 
 ## 📸 Screenshots
