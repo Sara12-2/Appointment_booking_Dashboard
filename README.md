@@ -7,6 +7,8 @@
 
 **Apex** is a sophisticated, single-file HTML dashboard for managing appointments, clients, and business analytics. It features a modern dark-mode UI, real-time data visualization, and a fully interactive calendar, making it perfect for salons, clinics, gyms, or any service-based business.
 ---
+## Live demo:
+https://appointment-booking-dashboard-ten.vercel.app/
 
 ## 📸 Screenshots
 
@@ -379,6 +381,9 @@ Contributions are what make the open-source community amazing! Any contributions
 - Test on multiple browsers before submitting
 - Update documentation as needed
 
+## Github repo link
+
+https://github.com/Sara12-2/Appointment_booking_Dashboard
 ---
 
 ## 📝 License
@@ -406,13 +411,6 @@ Under these terms:
 - All open-source contributors
 
 ---
-
-## 📧 Contact & Support
-
-**Developer:** Alex Rahman  
-**Email:** alex@apex.com  
-**Twitter:** @your-twitter  
-**Project Link:** [https://github.com/your-username/apex-dashboard](https://github.com/your-username/apex-dashboard)
 
 ### Support Options
 - 📖 Read the documentation above
