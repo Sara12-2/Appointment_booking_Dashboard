@@ -425,7 +425,6 @@ Under these terms:
 If this project helped you or you found it useful:
 
 - ⭐ Star this repository on GitHub
-- 🐦 Follow me on Twitter
 - 📢 Share with others
 - 💝 Consider sponsoring
 
@@ -440,6 +439,4 @@ If this project helped you or you found it useful:
 
 ---
 
-> Made with ✨ for modern service businesses  
-> *Built with passion, designed for efficiency, crafted for growth.*
 
